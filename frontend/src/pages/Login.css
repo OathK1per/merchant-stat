@@ -1,0 +1,49 @@
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f0f2f5;
+}
+
+.login-row {
+  width: 100%;
+}
+
+.login-card {
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.login-title {
+  margin-bottom: 0 !important;
+  font-size: 24px !important;
+  color: #1890ff !important;
+}
+
+.captcha-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px; /* 与输入框高度一致 */
+  cursor: pointer;
+  border: 1px solid #d9d9d9;
+  border-radius: 2px;
+  background-color: #fff;
+}
+
+.captcha-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.login-button {
+  margin-top: 16px;
+}
