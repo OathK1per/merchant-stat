@@ -8,7 +8,7 @@ from datetime import datetime
 from models import get_db, Notification, SysUser
 from auth import get_current_active_user
 
-router = APIRouter(prefix="/api/notifications", tags=["通知"])
+router = APIRouter(prefix="/notifications", tags=["通知"])
 
 # 通知基础模型
 class NotificationBase(BaseModel):

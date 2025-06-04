@@ -7,7 +7,7 @@ from datetime import datetime
 from models import get_db, ProductCategory, SysUser
 from auth import get_current_active_user
 
-router = APIRouter(prefix="/api/categories", tags=["商品分类"])
+router = APIRouter(prefix="/categories", tags=["商品分类"])
 
 # 分类基础模型
 class CategoryBase(BaseModel):

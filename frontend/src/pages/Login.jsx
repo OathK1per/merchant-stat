@@ -36,8 +36,8 @@ const Login = () => {
     try {
       const data = await getCaptcha()
       if (data) {
-        setCaptchaId(data.captcha_id)
-        setCaptchaImage(data.image)
+        setCaptchaId(data.captcha_key)
+        setCaptchaImage(data.captcha_image)
       }
     } catch (err) {
       message.error('获取验证码失败，请刷新重试')
@@ -46,7 +46,17 @@ const Login = () => {
   
   // 组件加载时获取验证码
   useEffect(() => {
-    fetchCaptcha()
+    // 使用ref来确保只调用一次
+    const captchaFetched = sessionStorage.getItem('captchaFetched')
+    if (!captchaFetched) {
+      fetchCaptcha()
+      sessionStorage.setItem('captchaFetched', 'true')
+    }
+    
+    // 组件卸载时清除标记
+    return () => {
+      sessionStorage.removeItem('captchaFetched')
+    }
   }, [])
   
   // 提交登录表单
@@ -57,7 +67,7 @@ const Login = () => {
       const success = await login({
         username: values.username,
         password: values.password,
-        captcha_id: captchaId,
+        captcha_key: captchaId,
         captcha_value: values.captcha,
       })
       

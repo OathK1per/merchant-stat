@@ -11,7 +11,7 @@ from auth import (
     generate_captcha_code, generate_captcha_image, create_captcha_record, verify_captcha
 )
 
-router = APIRouter(prefix="/api/auth", tags=["认证"])
+router = APIRouter(prefix="/auth", tags=["认证"])
 
 # 登录请求模型
 class LoginRequest(BaseModel):

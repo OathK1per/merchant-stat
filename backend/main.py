@@ -64,6 +64,37 @@ async def system_info(current_user: SysUser = Depends(get_current_active_user)):
         }
     }
 
+# 获取系统统计数据（需要认证）
+@app.get("/api/system-stats")
+async def system_stats(current_user: SysUser = Depends(get_current_active_user)):
+    from sqlalchemy.orm import Session
+    from models import Product, ProductCategory, Platform, get_db
+    
+    db = next(get_db())
+    
+    # 获取统计数据
+    product_count = db.query(Product).count()
+    category_count = db.query(ProductCategory).count()
+    platform_count = db.query(Platform).count()
+    
+    # 获取最近更新的商品
+    recent_products = db.query(Product).order_by(Product.updated_at.desc()).limit(5).all()
+    
+    return {
+        "product_count": product_count,
+        "category_count": category_count,
+        "platform_count": platform_count,
+        "recent_products": [
+            {
+                "id": p.id,
+                "name": p.name,
+                "price": p.price,
+                "currency": p.currency,
+                "updated_at": p.updated_at
+            } for p in recent_products
+        ]
+    }
+
 # 异常处理
 @app.exception_handler(Exception)
 async def global_exception_handler(request, exc):

@@ -7,7 +7,7 @@ from datetime import datetime
 from models import get_db, Platform, SysUser
 from auth import get_current_active_user
 
-router = APIRouter(prefix="/api/platforms", tags=["电商平台"])
+router = APIRouter(prefix="/platforms", tags=["电商平台"])
 
 # 平台基础模型
 class PlatformBase(BaseModel):

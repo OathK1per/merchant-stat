@@ -108,8 +108,14 @@ class SeleniumScraper(BaseScraper):
             chrome_options.add_argument("--disable-dev-shm-usage")
             chrome_options.add_argument(f"user-agent={USER_AGENT}")
             
-            service = Service(ChromeDriverManager().install())
-            self.driver = webdriver.Chrome(service=service, options=chrome_options)
+            # 直接使用Chrome驱动，不使用ChromeDriverManager
+            try:
+                # 尝试不使用service参数
+                self.driver = webdriver.Chrome(options=chrome_options)
+            except:
+                # 如果失败，尝试使用默认service
+                service = Service()
+                self.driver = webdriver.Chrome(service=service, options=chrome_options)
             return True
         except Exception as e:
             print(f"初始化WebDriver时出错: {e}")

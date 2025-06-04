@@ -10,7 +10,7 @@ from models import get_db, Product, ProductCategory, Platform, SysUser
 from auth import get_current_active_user
 from scraper import scrape_product_from_url
 
-router = APIRouter(prefix="/api/products", tags=["商品"])
+router = APIRouter(prefix="/products", tags=["商品"])
 
 # 商品基础模型
 class ProductBase(BaseModel):

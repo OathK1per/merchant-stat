@@ -54,7 +54,7 @@ export const authAPI = {
 // 商品相关API
 export const productAPI = {
   // 获取商品列表
-  getProducts: (params) => api.get('', { params }),
+  getProducts: (params) => api.get('/products', { params }),
   
   // 获取单个商品
   getProduct: (id) => api.get(`/products/${id}`),
@@ -136,6 +136,8 @@ export const notificationAPI = {
 export const systemAPI = {
   // 获取系统信息
   getSystemInfo: () => api.get('/system-info'),
+  // 获取统计数据
+  getStats: () => api.get('/system-stats'),
 }
 
 export default api
