@@ -12,7 +12,7 @@ import re
 import time
 from urllib.parse import urlparse
 from typing import Dict, Any, Optional, List
-from config import USER_AGENT, REQUEST_TIMEOUT
+from config import USER_AGENT, REQUEST_TIMEOUT, USE_PROXY, PROXY_URL, VERIFY_SSL
 
 # 商品数据模型
 class ProductData:
@@ -85,13 +85,37 @@ class RequestScraper(BaseScraper):
     
     def fetch_page(self, url):
         """获取页面内容"""
-        try:
-            response = requests.get(url, headers=self.headers, timeout=REQUEST_TIMEOUT)
-            response.raise_for_status()
-            return response.text
-        except Exception as e:
-            print(f"请求页面时出错: {e}")
-            return None
+        max_retries = 3
+        retry_count = 0
+        
+        # 设置代理
+        proxies = None
+        if USE_PROXY and PROXY_URL:
+            proxies = {
+                "http": PROXY_URL,
+                "https": PROXY_URL
+            }
+        
+        while retry_count < max_retries:
+            try:
+                response = requests.get(
+                    url, 
+                    headers=self.headers, 
+                    timeout=REQUEST_TIMEOUT,
+                    proxies=proxies,
+                    verify=VERIFY_SSL
+                )
+                response.raise_for_status()
+                return response.text
+            except Exception as e:
+                retry_count += 1
+                print(f"请求页面时出错 (尝试 {retry_count}/{max_retries}): {e}")
+                
+                if retry_count < max_retries:
+                    # 重试前等待时间递增
+                    time.sleep(2 * retry_count)
+                else:
+                    return None
 
 # Selenium爬虫类
 class SeleniumScraper(BaseScraper):
@@ -107,6 +131,17 @@ class SeleniumScraper(BaseScraper):
             chrome_options.add_argument("--no-sandbox")
             chrome_options.add_argument("--disable-dev-shm-usage")
             chrome_options.add_argument(f"user-agent={USER_AGENT}")
+            # 添加忽略SSL错误的选项
+            chrome_options.add_argument("--ignore-certificate-errors")
+            chrome_options.add_argument("--ignore-ssl-errors")
+            # 禁用图片加载以提高速度
+            chrome_options.add_argument("--blink-settings=imagesEnabled=false")
+            # 设置页面加载策略为eager，只等待DOM树加载完成
+            chrome_options.page_load_strategy = 'eager'
+            
+            # 添加代理设置
+            if USE_PROXY and PROXY_URL:
+                chrome_options.add_argument(f'--proxy-server={PROXY_URL}')
             
             # 直接使用Chrome驱动，不使用ChromeDriverManager
             try:
@@ -116,6 +151,11 @@ class SeleniumScraper(BaseScraper):
                 # 如果失败，尝试使用默认service
                 service = Service()
                 self.driver = webdriver.Chrome(service=service, options=chrome_options)
+            
+            # 设置页面加载超时
+            self.driver.set_page_load_timeout(30)  # 增加页面加载超时时间
+            self.driver.set_script_timeout(30)     # 增加脚本执行超时时间
+            
             return True
         except Exception as e:
             print(f"初始化WebDriver时出错: {e}")
@@ -126,14 +166,36 @@ class SeleniumScraper(BaseScraper):
         if not self.driver and not self.initialize_driver():
             return None
         
-        try:
-            self.driver.get(url)
-            # 等待页面加载完成
-            time.sleep(5)
-            return self.driver.page_source
-        except Exception as e:
-            print(f"使用Selenium获取页面时出错: {e}")
-            return None
+        max_retries = 3
+        retry_count = 0
+        
+        while retry_count < max_retries:
+            try:
+                self.driver.get(url)
+                # 等待页面加载完成，使用显式等待替代固定时间等待
+                try:
+                    # 等待body元素加载完成
+                    WebDriverWait(self.driver, 10).until(
+                        EC.presence_of_element_located((By.TAG_NAME, "body"))
+                    )
+                except:
+                    # 如果等待超时，继续执行，可能页面已部分加载
+                    pass
+                
+                return self.driver.page_source
+            except Exception as e:
+                retry_count += 1
+                print(f"使用Selenium获取页面时出错 (尝试 {retry_count}/{max_retries}): {e}")
+                
+                if retry_count < max_retries:
+                    # 重试前等待时间递增
+                    time.sleep(2 * retry_count)
+                    # 刷新驱动
+                    self.close()
+                    if not self.initialize_driver():
+                        return None
+                else:
+                    return None
     
     def close(self):
         """关闭WebDriver"""

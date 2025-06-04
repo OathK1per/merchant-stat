@@ -24,7 +24,14 @@ CAPTCHA_EXPIRE_SECONDS = 300  # 验证码有效期5分钟
 
 # 爬虫配置
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-REQUEST_TIMEOUT = 10  # 请求超时时间（秒）
+REQUEST_TIMEOUT = 30  # 增加请求超时时间（秒）
+
+# 代理设置（默认不启用）
+USE_PROXY = False
+PROXY_URL = ""  # 例如 "http://127.0.0.1:7890" 或 "socks5://127.0.0.1:1080"
+
+# SSL设置
+VERIFY_SSL = False  # 是否验证SSL证书
 
 # 应用配置
 API_PREFIX = "/api"
