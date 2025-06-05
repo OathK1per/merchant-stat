@@ -14,6 +14,7 @@ import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../../stores/authStore'
 import { useNotificationStore } from '../../stores/notificationStore'
 import NotificationList from '../Notification/NotificationList'
+import { PageTransition } from '../Animation'
 
 const { Header, Sider, Content } = Layout
 const { Title, Text } = Typography
@@ -190,7 +191,9 @@ const AppLayout = () => {
         </Header>
         
         <Content className="app-content">
-          <Outlet />
+          <PageTransition location={location.pathname} type="fade">
+            <Outlet />
+          </PageTransition>
         </Content>
       </Layout>
     </Layout>
