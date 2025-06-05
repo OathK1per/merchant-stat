@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from 'antd';
 
@@ -8,12 +8,12 @@ import { Button } from 'antd';
  * @param {string} props.animationType - 动画类型，可选值：scale, bounce, rotate
  * @param {Object} props.animationProps - 自定义动画属性
  */
-const AnimatedButton = ({ 
+const AnimatedButton = forwardRef(({ 
   children, 
   animationType = 'scale', 
   animationProps = {}, 
   ...buttonProps 
-}) => {
+}, ref) => {
   // 预设动画效果
   const animations = {
     scale: {
@@ -47,16 +47,17 @@ const AnimatedButton = ({
     ...animationProps
   };
 
+  // 使用 motion 组件的 ref 转发功能
   return (
     <motion.div
       style={{ display: 'inline-block' }}
       {...motionProps}
     >
-      <Button {...buttonProps}>
+      <Button ref={ref} {...buttonProps}>
         {children}
       </Button>
     </motion.div>
   );
-};
+});
 
 export default AnimatedButton;

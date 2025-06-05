@@ -112,6 +112,44 @@
    npm run build
    ```
 
+### 部署指南
+
+### Windows 环境部署
+
+1. 克隆代码库
+2. 确保已安装 Python 3.8+ 和 Node.js 16+
+3. 运行根目录下的 `start.bat` 文件
+
+### Linux 环境部署
+
+1. 克隆代码库
+2. 确保已安装 Python 3.8+ 和 Node.js 16+
+3. 为脚本添加执行权限：
+   ```bash
+   chmod +x start.sh
+   chmod +x backend/start.sh
+   chmod +x frontend/start.sh
+   ```
+4. 运行根目录下的 `start.sh` 文件：
+   ```bash
+   ./start.sh
+   ```
+
+### Docker 环境部署
+
+1. 克隆代码库
+2. 确保已安装 Docker 和 Docker Compose
+3. 复制 `.env.example` 为 `.env` 并根据需要修改配置：
+   ```bash
+   cp .env.example .env
+   ```
+4. 运行 Docker Compose 启动所有服务：
+   ```bash
+   docker-compose up -d
+   ```
+
+详细的部署说明请参考 [部署指南](DEPLOYMENT.md)。
+
 ### 一键启动（Windows）
 
 使用项目根目录的`start.bat`可以同时启动前端和后端服务：

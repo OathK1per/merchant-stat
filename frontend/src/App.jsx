@@ -6,6 +6,7 @@ import LoginPage from './pages/Login'
 import Layout from "./components/Layout/AppLayout";
 import Dashboard from './pages/Dashboard'
 import ProductList from './pages/ProductList'
+import ProductForm from './pages/ProductForm'
 import ProductScraper from './pages/ProductScraper'
 import NotFound from './pages/NotFound'
 
@@ -32,6 +33,8 @@ const App = () => {
         <Route path="/" element={isAuthenticated ? <Layout /> : <Navigate to="/login" />}>
           <Route index element={<Dashboard />} />
           <Route path="products" element={<ProductList />} />
+          <Route path="products/create" element={<ProductForm />} />
+          <Route path="products/edit/:id" element={<ProductForm />} />
           <Route path="scraper" element={<ProductScraper />} />
           <Route path="*" element={<NotFound />} />
         </Route>

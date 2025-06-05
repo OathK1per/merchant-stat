@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  # MySQL 数据库服务
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-zyp345}
+      MYSQL_DATABASE: merchant_stat
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - app-network
+    command: --default-authentication-plugin=mysql_native_password
+
+  # 后端 API 服务
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: always
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_USER=root
+      - DB_PASSWORD=${MYSQL_ROOT_PASSWORD:-zyp345}
+      - DB_NAME=merchant_stat
+      - PRODUCTION_DOMAIN=${PRODUCTION_DOMAIN:-localhost}
+    ports:
+      - "8000:8000"
+    networks:
+      - app-network
+
+  # 前端 Web 服务
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - "3000:80"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mysql_data:

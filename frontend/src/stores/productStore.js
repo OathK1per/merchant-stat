@@ -21,31 +21,60 @@ export const useProductStore = create((set, get) => ({
     current: 1,
     pageSize: 10,
   },
+  sorter: {
+    sort_field: null,
+    sort_order: null,
+  },
   
   // 获取商品列表
-  fetchProducts: async () => {
+  fetchProducts: async (params = {}) => {
     try {
       set({ loading: true, error: null })
       
-      const { filters, pagination } = get()
-      const params = {
+      const { filters, pagination, sorter } = get()
+      const requestParams = {
         skip: (pagination.current - 1) * pagination.pageSize,
         limit: pagination.pageSize,
         ...filters,
+        ...sorter, // 添加排序参数
+        ...params, // 允许覆盖默认参数
       }
       
-      const response = await productAPI.getProducts(params)
+      // 如果传入了排序参数，更新store中的排序状态
+      if (params.sort_field && params.sort_order) {
+        set({
+          sorter: {
+            sort_field: params.sort_field,
+            sort_order: params.sort_order
+          }
+        })
+      }
+      
+      // 使用Promise.race添加超时处理
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('请求超时')), 15000);
+      });
+      
+      const response = await Promise.race([
+        productAPI.getProducts(requestParams),
+        timeoutPromise
+      ]);
       
       set({
         products: response.items,
         total: response.total,
         loading: false,
       })
+      
+      return response;
     } catch (error) {
+      console.error('获取商品列表失败:', error);
       set({
         loading: false,
-        error: error.detail || '获取商品列表失败',
+        error: error.message || error.detail || '获取商品列表失败',
+        products: [], // 确保在错误情况下清空商品列表，避免显示旧数据
       })
+      return { items: [], total: 0 };
     }
   },
   
@@ -218,6 +247,10 @@ export const useProductStore = create((set, get) => ({
         min_price: null,
         max_price: null,
       },
+      sorter: {
+        sort_field: null,
+        sort_order: null,
+      },
     })
   },
   
@@ -226,6 +259,21 @@ export const useProductStore = create((set, get) => ({
     set({ pagination: { ...get().pagination, ...pagination } })
   },
   
+  // 设置排序
+  setSorter: (sorter) => {
+    set({ sorter: { ...get().sorter, ...sorter } })
+  },
+  
   // 清除错误
   clearError: () => set({ error: null }),
+  
+  // 设置页码
+  setPage: (page) => {
+    set({ pagination: { ...get().pagination, current: page } })
+  },
+  
+  // 设置每页条数
+  setPageSize: (pageSize) => {
+    set({ pagination: { ...get().pagination, pageSize } })
+  },
 }))

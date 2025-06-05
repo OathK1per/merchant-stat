@@ -55,17 +55,35 @@ const ProductScraper = () => {
   const [bulkProducts, setBulkProducts] = useState([])
   const [editingProduct, setEditingProduct] = useState(null)
   
-  // 初始化数据
+  // 加载分类和平台数据
   useEffect(() => {
-    const init = async () => {
-      await fetchCategories()
-      await fetchPlatforms()
-    }
+    let isMounted = true;
     
-    init()
-  }, [])
+    const loadData = async () => {
+      try {
+        // 设置加载状态但不清除现有数据
+        if (isMounted) {
+          // 并行获取数据
+          await Promise.all([
+            fetchCategories(),
+            fetchPlatforms()
+          ]);
+        }
+      } catch (err) {
+        if (isMounted) {
+          console.error('Failed to load data:', err);
+        }
+      }
+    };
+    
+    loadData();
+    
+    return () => {
+      isMounted = false;
+    };
+  }, [fetchCategories, fetchPlatforms]);
   
-  // 显示错误信息
+  // 处理错误信息
   useEffect(() => {
     if (error) {
       message.error(error)
@@ -78,7 +96,6 @@ const ProductScraper = () => {
       const product = await scrapeProduct(values.url)
       if (product) {
         setScrapedProduct(product)
-        message.success('商品抓取成功')
       }
     } catch (error) {
       message.error('抓取失败: ' + (error.message || '未知错误'))
@@ -258,73 +275,6 @@ const ProductScraper = () => {
                 </Button>
               </Form.Item>
             </Form>
-            
-            {loading && (
-              <div className="loading-container">
-                <Spin tip="正在抓取商品数据..." />
-              </div>
-            )}
-            
-            {scrapedProduct && (
-              <div className="scraped-result">
-                <Divider>抓取结果</Divider>
-                
-                <Card>
-                  <div className="product-info">
-                    <div className="product-image">
-                      {scrapedProduct.image_url ? (
-                        <img 
-                          src={scrapedProduct.image_url} 
-                          alt={scrapedProduct.name} 
-                          style={{ maxWidth: '100%', maxHeight: '200px' }}
-                        />
-                      ) : (
-                        <div className="no-image">无图片</div>
-                      )}
-                    </div>
-                    
-                    <div className="product-details">
-                      <Title level={4}>
-                        <a href={scrapedProduct.url} target="_blank" rel="noopener noreferrer">
-                          {scrapedProduct.name} <LinkOutlined />
-                        </a>
-                      </Title>
-                      
-                      <Paragraph>
-                        <Text strong>平台：</Text>
-                        <Tag color="blue">{scrapedProduct.platform?.name || '未知平台'}</Tag>
-                      </Paragraph>
-                      
-                      <Paragraph>
-                        <Text strong>分类：</Text>
-                        {scrapedProduct.category?.name || '未分类'}
-                      </Paragraph>
-                      
-                      <Paragraph>
-                        <Text strong>价格：</Text>
-                        {scrapedProduct.price ? `¥${scrapedProduct.price}` : '未知'}
-                      </Paragraph>
-                      
-                      <Paragraph>
-                        <Text strong>销量：</Text>
-                        {scrapedProduct.sales || '未知'}
-                      </Paragraph>
-                      
-                      {scrapedProduct.parameters && (
-                        <Paragraph>
-                          <Text strong>参数：</Text>
-                          <pre>{JSON.stringify(scrapedProduct.parameters, null, 2)}</pre>
-                        </Paragraph>
-                      )}
-                    </div>
-                  </div>
-                </Card>
-                
-                <div style={{ marginTop: '16px', textAlign: 'right' }}>
-                  <Text type="success">商品数据已保存到数据库</Text>
-                </div>
-              </div>
-            )}
           </Card>
         </TabPane>
         

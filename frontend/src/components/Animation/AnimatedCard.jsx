@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { motion } from 'framer-motion';
 import { Card } from 'antd';
 
@@ -8,12 +8,12 @@ import { Card } from 'antd';
  * @param {string} props.animationType - 动画类型，可选值：hover, float, glow
  * @param {Object} props.animationProps - 自定义动画属性
  */
-const AnimatedCard = ({ 
+const AnimatedCard = forwardRef(({ 
   children, 
   animationType = 'hover', 
   animationProps = {}, 
   ...cardProps 
-}) => {
+}, ref) => {
   // 预设动画效果
   const animations = {
     hover: {
@@ -62,11 +62,11 @@ const AnimatedCard = ({
       {...motionProps}
       style={{ height: '100%' }}
     >
-      <Card {...cardProps} style={{ height: '100%', ...cardProps.style }}>
+      <Card ref={ref} {...cardProps} style={{ height: '100%', ...cardProps.style }}>
         {children}
       </Card>
     </motion.div>
   );
-};
+});
 
 export default AnimatedCard;
