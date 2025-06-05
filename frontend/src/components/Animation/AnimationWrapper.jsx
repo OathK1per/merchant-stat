@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { motion } from 'framer-motion';
 
 // 预设动画效果
@@ -78,14 +78,14 @@ const animations = {
  * @param {Object} props.custom - 自定义动画属性，会覆盖预设动画
  * @param {string} props.className - 额外的CSS类名
  */
-const AnimationWrapper = ({ 
+const AnimationWrapper = forwardRef(({ 
   children, 
   type = 'fadeIn', 
   index = 0, 
   custom = {}, 
   className = '',
   ...props 
-}) => {
+}, ref) => {
   // 获取预设动画或使用自定义动画
   let animation = animations[type] || animations.fadeIn;
   
@@ -102,6 +102,7 @@ const AnimationWrapper = ({
 
   return (
     <motion.div
+      ref={ref}
       className={className}
       initial={animationProps.initial}
       animate={animationProps.animate}
@@ -112,6 +113,6 @@ const AnimationWrapper = ({
       {children}
     </motion.div>
   );
-};
+});
 
 export default AnimationWrapper;

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { forwardRef, Children, cloneElement } from 'react';
 import { motion } from 'framer-motion';
 
 /**
@@ -9,13 +9,13 @@ import { motion } from 'framer-motion';
  * @param {number} props.staggerDelay - 列表项之间的延迟时间（秒）
  * @param {string} props.animation - 动画类型，可选值：fadeIn, slideUp, slideLeft, scale
  */
-const AnimatedList = ({ 
+const AnimatedList = forwardRef(({ 
   children, 
   className = '', 
   staggerDelay = 0.05, 
   animation = 'fadeIn',
   ...props 
-}) => {
+}, ref) => {
   // 预设动画效果
   const animations = {
     fadeIn: {
@@ -60,10 +60,11 @@ const AnimatedList = ({
   };
 
   // 将React子元素转换为数组
-  const childrenArray = React.Children.toArray(children);
+  const childrenArray = Children.toArray(children);
 
   return (
     <motion.div
+      ref={ref}
       className={className}
       variants={containerVariants}
       initial="hidden"
@@ -71,12 +72,12 @@ const AnimatedList = ({
       {...props}
     >
       {childrenArray.map((child, index) => (
-        <motion.div key={index} variants={itemVariants}>
+        <motion.div key={child.key || index} variants={itemVariants}>
           {child}
         </motion.div>
       ))}
     </motion.div>
   );
-};
+});
 
 export default AnimatedList;

@@ -5,8 +5,16 @@ from sqlalchemy.sql import func
 from config import DATABASE_URL
 import datetime
 
-# 创建数据库引擎
-engine = create_engine(DATABASE_URL)
+# 创建数据库引擎，添加连接池配置
+engine = create_engine(
+    DATABASE_URL,
+    pool_size=10,  # 连接池大小
+    max_overflow=20,  # 超过连接池大小外最多创建的连接
+    pool_timeout=30,  # 池中没有连接最多等待的秒数
+    pool_recycle=1800,  # 连接重置周期，默认-1，推荐设置为小于数据库超时时间
+    pool_pre_ping=True,  # 每次连接前检测连接是否有效
+    echo=False  # 是否打印SQL语句，生产环境设为False
+)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 

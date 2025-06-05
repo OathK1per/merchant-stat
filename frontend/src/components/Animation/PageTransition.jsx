@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 /**
@@ -9,13 +9,13 @@ import { motion, AnimatePresence } from 'framer-motion';
  * @param {string} props.className - 额外的CSS类名
  * @param {string} props.location - 当前路由位置，用于触发动画
  */
-const PageTransition = ({ 
+const PageTransition = forwardRef(({ 
   children, 
   type = 'fade', 
   className = '',
   location,
   ...props 
-}) => {
+}, ref) => {
   // 预设动画效果
   const animations = {
     fade: {
@@ -50,6 +50,7 @@ const PageTransition = ({
   return (
     <AnimatePresence mode="wait">
       <motion.div
+        ref={ref}
         key={location}
         className={className}
         initial={animation.initial}
@@ -62,6 +63,6 @@ const PageTransition = ({
       </motion.div>
     </AnimatePresence>
   );
-};
+});
 
 export default PageTransition;

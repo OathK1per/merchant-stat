@@ -71,6 +71,8 @@ async def get_products(
     name: Optional[str] = None,
     min_price: Optional[float] = None,
     max_price: Optional[float] = None,
+    sort_field: Optional[str] = None,
+    sort_order: Optional[str] = None,
     db: Session = Depends(get_db),
     current_user: SysUser = Depends(get_current_active_user)
 ):
@@ -97,7 +99,24 @@ async def get_products(
     total = query.count()
     
     # 排序并分页
-    items = query.order_by(desc(Product.updated_at)).offset(skip).limit(limit).all()
+    if sort_field and sort_order:
+        # 根据排序字段和排序方式进行排序
+        if sort_field == 'name':
+            query = query.order_by(Product.name.asc() if sort_order == 'ascend' else Product.name.desc())
+        elif sort_field == 'price':
+            query = query.order_by(Product.price.asc() if sort_order == 'ascend' else Product.price.desc())
+        elif sort_field == 'sales':
+            query = query.order_by(Product.sales_count.asc() if sort_order == 'ascend' else Product.sales_count.desc())
+        elif sort_field == 'updated_at':
+            query = query.order_by(Product.updated_at.asc() if sort_order == 'ascend' else Product.updated_at.desc())
+        else:
+            # 默认按更新时间降序排序
+            query = query.order_by(Product.updated_at.desc())
+    else:
+        # 默认按更新时间降序排序
+        query = query.order_by(Product.updated_at.desc())
+    
+    items = query.offset(skip).limit(limit).all()
     
     # 构建响应
     result_items = []

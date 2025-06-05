@@ -7,6 +7,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 3000,
+    host: '0.0.0.0', // 监听所有网络接口，允许远程访问
     proxy: {
       '/api': {
         target: 'http://localhost:8000',

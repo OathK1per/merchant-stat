@@ -2,13 +2,13 @@ import os
 from datetime import timedelta
 import secrets
 
-# 数据库配置
+# 从环境变量获取数据库配置，如果不存在则使用默认值
 DB_CONFIG = {
-    "host": "159.75.77.175",
-    "port": 3306,
-    "user": "root",
-    "password": "zyp345",
-    "database": "merchant_stat"
+    "host": os.environ.get("DB_HOST", "159.75.77.175"),
+    "port": int(os.environ.get("DB_PORT", 3306)),
+    "user": os.environ.get("DB_USER", "root"),
+    "password": os.environ.get("DB_PASSWORD", "zyp345"),
+    "database": os.environ.get("DB_NAME", "merchant_stat")
 }
 
 # 数据库连接URL
@@ -35,5 +35,12 @@ VERIFY_SSL = False  # 是否验证SSL证书
 
 # 应用配置
 API_PREFIX = "/api"
-# 限制CORS来源，只允许本地开发环境和特定域名
+# 限制CORS来源，允许本地开发环境、特定域名和所有生产环境域名
 ALLOW_ORIGINS = ["http://localhost:3000", "http://127.0.0.1:3000", "http://localhost:8000", "http://127.0.0.1:8000"]
+
+# 如果设置了环境变量 PRODUCTION_DOMAIN，则添加到允许的来源列表中
+import os
+PRODUCTION_DOMAIN = os.environ.get("PRODUCTION_DOMAIN")
+if PRODUCTION_DOMAIN:
+    # 添加 HTTP 和 HTTPS 版本的域名
+    ALLOW_ORIGINS.extend([f"http://{PRODUCTION_DOMAIN}", f"https://{PRODUCTION_DOMAIN}"])
