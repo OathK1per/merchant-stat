@@ -38,7 +38,9 @@ class BaseScraper:
     
     def get_platform_name(self, url):
         """从URL中提取平台名称"""
-        domain = urlparse(url).netloc
+        domain = urlparse(url).netloc.lower()
+        
+        # 主流电商平台
         if "amazon" in domain:
             return "Amazon"
         elif "ebay" in domain:
@@ -51,7 +53,57 @@ class BaseScraper:
             return "Shopee"
         elif "lazada" in domain:
             return "Lazada"
+        
+        # 中国电商平台
+        elif "taobao" in domain or "tmall" in domain:
+            return "淘宝/天猫"
+        elif "jd.com" in domain or "jd.hk" in domain:
+            return "京东"
+        elif "pinduoduo" in domain or "yangkeduo" in domain:
+            return "拼多多"
+        elif "1688" in domain:
+            return "1688"
+        
+        # 日本电商平台
+        elif "rakuten" in domain:
+            return "乐天"
+        elif "yahoo" in domain and "jp" in domain:
+            return "Yahoo购物"
+        elif "mercari" in domain:
+            return "Mercari"
+        
+        # 韩国电商平台
+        elif "gmarket" in domain:
+            return "Gmarket"
+        elif "11st" in domain:
+            return "11번가"
+        elif "coupang" in domain:
+            return "Coupang"
+        
+        # 东南亚电商平台
+        elif "tokopedia" in domain:
+            return "Tokopedia"
+        elif "bukalapak" in domain:
+            return "Bukalapak"
+        elif "tiki" in domain:
+            return "Tiki"
+        elif "sendo" in domain:
+            return "Sendo"
+        
+        # 欧洲电商平台
+        elif "allegro" in domain:
+            return "Allegro"
+        elif "cdiscount" in domain:
+            return "Cdiscount"
+        elif "otto" in domain:
+            return "Otto"
+        
+        # 其他平台
         else:
+            # 尝试从域名中提取平台名称
+            domain_parts = domain.replace('www.', '').split('.')
+            if domain_parts:
+                return domain_parts[0].capitalize()
             return "其他"
     
     def guess_category(self, product_name, description):
@@ -153,8 +205,8 @@ class SeleniumScraper(BaseScraper):
                 self.driver = webdriver.Chrome(service=service, options=chrome_options)
             
             # 设置页面加载超时
-            self.driver.set_page_load_timeout(30)  # 增加页面加载超时时间
-            self.driver.set_script_timeout(30)     # 增加脚本执行超时时间
+            self.driver.set_page_load_timeout(60)  # 增加页面加载超时时间
+            self.driver.set_script_timeout(60)     # 增加脚本执行超时时间
             
             return True
         except Exception as e:
@@ -196,6 +248,80 @@ class SeleniumScraper(BaseScraper):
                         return None
                 else:
                     return None
+    
+    def scrape_product(self, url):
+        """通用商品信息抓取方法"""
+        html = self.fetch_page(url)
+        if not html:
+            return None
+        
+        soup = BeautifulSoup(html, 'html.parser')
+        product = ProductData()
+        product.url = url
+        product.platform_name = self.get_platform_name(url)
+        
+        # 尝试提取商品名称 - 使用多种常见的选择器
+        name_selectors = [
+            'h1', '.product-title', '.product-name', '.item-title',
+            '[data-testid="product-title"]', '.title', '#product-title'
+        ]
+        for selector in name_selectors:
+            name_elem = soup.select_one(selector)
+            if name_elem and name_elem.text.strip():
+                product.name = name_elem.text.strip()
+                break
+        
+        # 尝试提取价格 - 使用多种常见的选择器
+        price_selectors = [
+            '.price', '.product-price', '.item-price', '.current-price',
+            '[data-testid="price"]', '.price-current', '.sale-price'
+        ]
+        for selector in price_selectors:
+            price_elem = soup.select_one(selector)
+            if price_elem:
+                price_text = price_elem.text.strip()
+                # 提取货币符号和价格
+                currency_match = re.search(r'([^\d,.]+)', price_text)
+                if currency_match:
+                    product.currency = currency_match.group(1).strip()
+                
+                # 提取数字部分
+                price_match = re.search(r'[\d,.]+', price_text)
+                if price_match:
+                    price_str = price_match.group(0).replace(',', '')
+                    try:
+                        product.price = float(price_str)
+                        break
+                    except ValueError:
+                        continue
+        
+        # 尝试提取图片URL - 使用多种常见的选择器
+        img_selectors = [
+            '.product-image img', '.item-image img', '.main-image img',
+            '[data-testid="product-image"] img', '.gallery img:first-child'
+        ]
+        for selector in img_selectors:
+            img_elem = soup.select_one(selector)
+            if img_elem and ('src' in img_elem.attrs or 'data-src' in img_elem.attrs):
+                product.image_url = img_elem.get('src') or img_elem.get('data-src')
+                if product.image_url:
+                    break
+        
+        # 尝试提取描述 - 使用多种常见的选择器
+        desc_selectors = [
+            '.product-description', '.item-description', '.description',
+            '[data-testid="description"]', '.product-details', '.summary'
+        ]
+        for selector in desc_selectors:
+            desc_elem = soup.select_one(selector)
+            if desc_elem and desc_elem.text.strip():
+                product.description = desc_elem.text.strip()[:500]  # 限制长度
+                break
+        
+        # 猜测分类
+        product.category_name = self.guess_category(product.name, product.description)
+        
+        return product
     
     def close(self):
         """关闭WebDriver"""

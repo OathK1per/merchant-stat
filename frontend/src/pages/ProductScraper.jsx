@@ -96,6 +96,8 @@ const ProductScraper = () => {
       const product = await scrapeProduct(values.url)
       if (product) {
         setScrapedProduct(product)
+        message.success('商品信息抓取成功！')
+        form.resetFields() // 清空输入栏
       }
     } catch (error) {
       message.error('抓取失败: ' + (error.message || '未知错误'))
@@ -200,7 +202,11 @@ const ProductScraper = () => {
       title: '价格',
       dataIndex: 'price',
       key: 'price',
-      render: (price) => price ? `¥${price}` : '-',
+      render: (price, record) => {
+        if (!price) return '-'
+        const currency = record.currency || 'USD'
+        return `${currency} ${price}`
+      },
     },
     {
       title: '销量',

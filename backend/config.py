@@ -24,7 +24,7 @@ CAPTCHA_EXPIRE_SECONDS = 300  # 验证码有效期5分钟
 
 # 爬虫配置
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-REQUEST_TIMEOUT = 30  # 增加请求超时时间（秒）
+REQUEST_TIMEOUT = 60  # 增加请求超时时间（秒）
 
 # 代理设置（默认不启用）
 USE_PROXY = False

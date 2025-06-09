@@ -52,7 +52,7 @@ export const useProductStore = create((set, get) => ({
       
       // 使用Promise.race添加超时处理
       const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('请求超时')), 15000);
+        setTimeout(() => reject(new Error('请求超时')), 60000);
       });
       
       const response = await Promise.race([

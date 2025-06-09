@@ -303,7 +303,11 @@ const ProductList = () => {
       title: '价格',
       dataIndex: 'price',
       key: 'price',
-      render: (text) => text ? `¥${text.toFixed(2)}` : '-',
+      render: (text, record) => {
+        if (!text) return '-'
+        const currency = record.currency || 'USD'
+        return `${currency} ${text.toFixed(2)}`
+      },
       sorter: true,
     },
     {

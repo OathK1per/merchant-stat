@@ -8,7 +8,9 @@ import {
   LogoutOutlined,
   BellOutlined,
   MenuFoldOutlined,
-  MenuUnfoldOutlined
+  MenuUnfoldOutlined,
+  ShopOutlined,
+  TagsOutlined
 } from '@ant-design/icons'
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../../stores/authStore'
@@ -52,6 +54,8 @@ const AppLayout = () => {
     if (path === '/') return ['dashboard']
     if (path.startsWith('/products')) return ['products']
     if (path.startsWith('/scraper')) return ['scraper']
+    if (path.startsWith('/platform-config')) return ['platform-config']
+    if (path.startsWith('/category-config')) return ['category-config']
     return []
   }
   
@@ -134,6 +138,16 @@ const AppLayout = () => {
               key: 'scraper',
               icon: <CloudDownloadOutlined />,
               label: <Link to="/scraper">数据抓取</Link>,
+            },
+            {
+              key: 'platform-config',
+              icon: <ShopOutlined />,
+              label: <Link to="/platform-config">平台配置</Link>,
+            },
+            {
+              key: 'category-config',
+              icon: <TagsOutlined />,
+              label: <Link to="/category-config">分类配置</Link>,
             },
           ]}
         />

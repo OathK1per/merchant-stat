@@ -68,8 +68,8 @@ const Dashboard = () => {
   }, [fetchProducts, stats]) // 添加fetchProducts和stats作为依赖项
   
   // 格式化价格
-  const formatPrice = (price) => {
-    return price ? `¥${price.toFixed(2)}` : '-'
+  const formatPrice = (price, currency = 'USD') => {
+    return price ? `${currency} ${price.toFixed(2)}` : '-'
   }
   
   // 获取平台标签颜色
@@ -173,7 +173,7 @@ const Dashboard = () => {
                                   销量: {item.sales || 0}
                                 </Text>
                                 <Text type="secondary" style={{ marginLeft: '8px' }}>
-                                  价格: {formatPrice(item.price)}
+                                  价格: {formatPrice(item.price, item.currency)}
                                 </Text>
                               </div>
                             }
