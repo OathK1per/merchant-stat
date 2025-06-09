@@ -100,9 +100,8 @@ async def system_stats(current_user: SysUser = Depends(get_current_active_user))
 async def global_exception_handler(request, exc):
     return JSONResponse(
         status_code=500,
-        content={"detail": f"发生内部错误: {str(exc)}"},
+        content={"detail": "Internal server error"}
     )
 
-# 启动应用
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run(app, host="0.0.0.0", port=8000)
