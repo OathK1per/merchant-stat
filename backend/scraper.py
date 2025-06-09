@@ -38,7 +38,9 @@ class BaseScraper:
     
     def get_platform_name(self, url):
         """从URL中提取平台名称"""
-        domain = urlparse(url).netloc
+        domain = urlparse(url).netloc.lower()
+        
+        # 主流电商平台
         if "amazon" in domain:
             return "Amazon"
         elif "ebay" in domain:
@@ -51,30 +53,154 @@ class BaseScraper:
             return "Shopee"
         elif "lazada" in domain:
             return "Lazada"
+        
+        # 中国电商平台
+        elif "taobao" in domain or "tmall" in domain:
+            return "淘宝/天猫"
+        elif "jd.com" in domain or "jd.hk" in domain:
+            return "京东"
+        elif "pinduoduo" in domain or "yangkeduo" in domain:
+            return "拼多多"
+        elif "1688" in domain:
+            return "1688"
+        
+        # 日本电商平台
+        elif "rakuten" in domain:
+            return "乐天"
+        elif "yahoo" in domain and "jp" in domain:
+            return "Yahoo购物"
+        elif "mercari" in domain:
+            return "Mercari"
+        
+        # 韩国电商平台
+        elif "gmarket" in domain:
+            return "Gmarket"
+        elif "11st" in domain:
+            return "11번가"
+        elif "coupang" in domain:
+            return "Coupang"
+        
+        # 东南亚电商平台
+        elif "tokopedia" in domain:
+            return "Tokopedia"
+        elif "bukalapak" in domain:
+            return "Bukalapak"
+        elif "tiki" in domain:
+            return "Tiki"
+        elif "sendo" in domain:
+            return "Sendo"
+        
+        # 欧洲电商平台
+        elif "allegro" in domain:
+            return "Allegro"
+        elif "cdiscount" in domain:
+            return "Cdiscount"
+        elif "otto" in domain:
+            return "Otto"
+        
+        # 其他平台
         else:
+            # 尝试从域名中提取平台名称
+            domain_parts = domain.replace('www.', '').split('.')
+            if domain_parts:
+                return domain_parts[0].capitalize()
             return "其他"
     
     def guess_category(self, product_name, description):
         """根据商品名称和描述猜测分类"""
-        # 简单的关键词匹配
-        electronics_keywords = ["phone", "电话", "手机", "computer", "电脑", "laptop", "笔记本", "tablet", "平板", "camera", "相机"]
-        clothing_keywords = ["shirt", "衬衫", "dress", "连衣裙", "pants", "裤子", "shoes", "鞋", "hat", "帽子"]
-        home_keywords = ["furniture", "家具", "decoration", "装饰", "kitchen", "厨房", "bedroom", "卧室"]
-        beauty_keywords = ["makeup", "化妆品", "skincare", "护肤", "cosmetic", "美妆"]
-        food_keywords = ["food", "食品", "drink", "饮料", "snack", "零食"]
+        # 扩展的多语言关键词匹配
+        electronics_keywords = [
+            # 英文
+            "phone", "computer", "laptop", "tablet", "camera", "headphone", "speaker", "monitor", "keyboard", "mouse",
+            "smartphone", "iphone", "android", "macbook", "ipad", "gaming", "console", "tv", "smart watch", "earbuds",
+            # 中文
+            "电话", "手机", "电脑", "笔记本", "平板", "相机", "耳机", "音响", "显示器", "键盘", "鼠标",
+            "智能手机", "苹果", "安卓", "游戏机", "电视", "智能手表", "无线耳机",
+            # 日文
+            "スマホ", "パソコン", "ノートパソコン", "タブレット", "カメラ", "ヘッドホン", "スピーカー", "モニター",
+            # 韩文
+            "스마트폰", "컴퓨터", "노트북", "태블릿", "카메라", "헤드폰", "스피커", "모니터"
+        ]
+        
+        clothing_keywords = [
+            # 英文
+            "shirt", "dress", "pants", "shoes", "hat", "jacket", "coat", "sweater", "jeans", "sneakers",
+            "t-shirt", "hoodie", "skirt", "shorts", "boots", "sandals", "suit", "blazer", "underwear", "socks",
+            # 中文
+            "衬衫", "连衣裙", "裤子", "鞋", "帽子", "夹克", "外套", "毛衣", "牛仔裤", "运动鞋",
+            "T恤", "卫衣", "裙子", "短裤", "靴子", "凉鞋", "西装", "内衣", "袜子",
+            # 日文
+            "シャツ", "ドレス", "パンツ", "靴", "帽子", "ジャケット", "コート", "セーター", "ジーンズ",
+            # 韩文
+            "셔츠", "드레스", "바지", "신발", "모자", "재킷", "코트", "스웨터", "청바지"
+        ]
+        
+        home_keywords = [
+            # 英文
+            "furniture", "decoration", "kitchen", "bedroom", "living room", "dining", "chair", "table", "sofa",
+            "bed", "lamp", "curtain", "pillow", "blanket", "storage", "organizer", "vase", "candle",
+            # 中文
+            "家具", "装饰", "厨房", "卧室", "客厅", "餐厅", "椅子", "桌子", "沙发",
+            "床", "灯", "窗帘", "枕头", "毯子", "收纳", "整理", "花瓶", "蜡烛",
+            # 日文
+            "家具", "装飾", "キッチン", "寝室", "リビング", "ダイニング", "椅子", "テーブル", "ソファ",
+            # 韩文
+            "가구", "장식", "주방", "침실", "거실", "식당", "의자", "테이블", "소파"
+        ]
+        
+        beauty_keywords = [
+            # 英文
+            "makeup", "skincare", "cosmetic", "lipstick", "foundation", "mascara", "perfume", "lotion",
+            "cream", "serum", "cleanser", "moisturizer", "sunscreen", "shampoo", "conditioner",
+            # 中文
+            "化妆品", "护肤", "美妆", "口红", "粉底", "睫毛膏", "香水", "乳液",
+            "面霜", "精华", "洁面", "保湿", "防晒", "洗发水", "护发素",
+            # 日文
+            "化粧品", "スキンケア", "コスメ", "口紅", "ファンデーション", "マスカラ", "香水",
+            # 韩文
+            "화장품", "스킨케어", "코스메틱", "립스틱", "파운데이션", "마스카라", "향수"
+        ]
+        
+        food_keywords = [
+            # 英文
+            "food", "drink", "snack", "coffee", "tea", "chocolate", "candy", "cookie", "cake", "bread",
+            "juice", "water", "wine", "beer", "supplement", "vitamin", "protein", "organic",
+            # 中文
+            "食品", "饮料", "零食", "咖啡", "茶", "巧克力", "糖果", "饼干", "蛋糕", "面包",
+            "果汁", "水", "酒", "啤酒", "保健品", "维生素", "蛋白质", "有机",
+            # 日文
+            "食品", "飲み物", "スナック", "コーヒー", "茶", "チョコレート", "お菓子", "クッキー",
+            # 韩文
+            "식품", "음료", "스낵", "커피", "차", "초콜릿", "사탕", "쿠키"
+        ]
+        
+        sports_keywords = [
+            # 英文
+            "sports", "fitness", "gym", "exercise", "running", "yoga", "basketball", "football", "tennis",
+            "swimming", "cycling", "hiking", "camping", "outdoor", "athletic", "workout", "training",
+            # 中文
+            "运动", "健身", "体育", "锻炼", "跑步", "瑜伽", "篮球", "足球", "网球",
+            "游泳", "骑行", "徒步", "露营", "户外", "运动装", "训练",
+            # 日文
+            "スポーツ", "フィットネス", "ジム", "運動", "ランニング", "ヨガ", "バスケ",
+            # 韩文
+            "스포츠", "피트니스", "헬스", "운동", "러닝", "요가", "농구"
+        ]
         
         text = (product_name + " " + description).lower()
         
-        if any(keyword in text for keyword in electronics_keywords):
+        if any(keyword.lower() in text for keyword in electronics_keywords):
             return "电子产品"
-        elif any(keyword in text for keyword in clothing_keywords):
+        elif any(keyword.lower() in text for keyword in clothing_keywords):
             return "服装鞋帽"
-        elif any(keyword in text for keyword in home_keywords):
+        elif any(keyword.lower() in text for keyword in home_keywords):
             return "家居用品"
-        elif any(keyword in text for keyword in beauty_keywords):
+        elif any(keyword.lower() in text for keyword in beauty_keywords):
             return "美妆护肤"
-        elif any(keyword in text for keyword in food_keywords):
+        elif any(keyword.lower() in text for keyword in food_keywords):
             return "食品饮料"
+        elif any(keyword.lower() in text for keyword in sports_keywords):
+            return "运动户外"
         else:
             return "其他"
 
@@ -153,8 +279,8 @@ class SeleniumScraper(BaseScraper):
                 self.driver = webdriver.Chrome(service=service, options=chrome_options)
             
             # 设置页面加载超时
-            self.driver.set_page_load_timeout(30)  # 增加页面加载超时时间
-            self.driver.set_script_timeout(30)     # 增加脚本执行超时时间
+            self.driver.set_page_load_timeout(60)  # 增加页面加载超时时间
+            self.driver.set_script_timeout(60)     # 增加脚本执行超时时间
             
             return True
         except Exception as e:
@@ -196,6 +322,80 @@ class SeleniumScraper(BaseScraper):
                         return None
                 else:
                     return None
+    
+    def scrape_product(self, url):
+        """通用商品信息抓取方法"""
+        html = self.fetch_page(url)
+        if not html:
+            return None
+        
+        soup = BeautifulSoup(html, 'html.parser')
+        product = ProductData()
+        product.url = url
+        product.platform_name = self.get_platform_name(url)
+        
+        # 尝试提取商品名称 - 使用多种常见的选择器
+        name_selectors = [
+            'h1', '.product-title', '.product-name', '.item-title',
+            '[data-testid="product-title"]', '.title', '#product-title'
+        ]
+        for selector in name_selectors:
+            name_elem = soup.select_one(selector)
+            if name_elem and name_elem.text.strip():
+                product.name = name_elem.text.strip()
+                break
+        
+        # 尝试提取价格 - 使用多种常见的选择器
+        price_selectors = [
+            '.price', '.product-price', '.item-price', '.current-price',
+            '[data-testid="price"]', '.price-current', '.sale-price'
+        ]
+        for selector in price_selectors:
+            price_elem = soup.select_one(selector)
+            if price_elem:
+                price_text = price_elem.text.strip()
+                # 提取货币符号和价格
+                currency_match = re.search(r'([^\d,.]+)', price_text)
+                if currency_match:
+                    product.currency = currency_match.group(1).strip()
+                
+                # 提取数字部分
+                price_match = re.search(r'[\d,.]+', price_text)
+                if price_match:
+                    price_str = price_match.group(0).replace(',', '')
+                    try:
+                        product.price = float(price_str)
+                        break
+                    except ValueError:
+                        continue
+        
+        # 尝试提取图片URL - 使用多种常见的选择器
+        img_selectors = [
+            '.product-image img', '.item-image img', '.main-image img',
+            '[data-testid="product-image"] img', '.gallery img:first-child'
+        ]
+        for selector in img_selectors:
+            img_elem = soup.select_one(selector)
+            if img_elem and ('src' in img_elem.attrs or 'data-src' in img_elem.attrs):
+                product.image_url = img_elem.get('src') or img_elem.get('data-src')
+                if product.image_url:
+                    break
+        
+        # 尝试提取描述 - 使用多种常见的选择器
+        desc_selectors = [
+            '.product-description', '.item-description', '.description',
+            '[data-testid="description"]', '.product-details', '.summary'
+        ]
+        for selector in desc_selectors:
+            desc_elem = soup.select_one(selector)
+            if desc_elem and desc_elem.text.strip():
+                product.description = desc_elem.text.strip()[:500]  # 限制长度
+                break
+        
+        # 猜测分类
+        product.category_name = self.guess_category(product.name, product.description)
+        
+        return product
     
     def close(self):
         """关闭WebDriver"""
