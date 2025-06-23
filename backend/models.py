@@ -1,3 +1,4 @@
+from pydantic import BaseModel
 from sqlalchemy import Column, Integer, String, Float, DateTime, Text, ForeignKey, Boolean, create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
@@ -116,6 +117,50 @@ class CaptchaRecord(Base):
     expire_time = Column(DateTime, nullable=False)
     is_used = Column(Boolean, default=False)
     created_at = Column(DateTime, default=func.now())
+
+# 商品详情表
+class ProductDetail(Base):
+    __tablename__ = "product_detail"
+
+    item_code = Column(String(100), primary_key=True, index=True)
+    img_url = Column(String(512))
+    img_text = Column(String(255))
+    org_o_price = Column(String(50))
+    org_price = Column(String(50))
+    o_price_interval = Column(String(50))
+    price_interval = Column(String(50))
+    seller_store_url = Column(String(512))
+    recentlysold = Column(String(50))
+    domain_name = Column(String(100))
+    product_id = Column(String(100))
+    reviews_core = Column(String(50))
+    feedback_score_percentum = Column(String(50))
+    catalog_id = Column(String(100))
+    link_url = Column(String(512))
+    json_object = Column(Text)
+    created_at = Column(DateTime, default=func.now())
+
+class ProductDetailSchema(BaseModel):
+    item_code: str
+    img_url: str | None = None
+    img_text: str | None = None
+    org_o_price: str | None = None
+    org_price: str | None = None
+    o_price_interval: str | None = None
+    price_interval: str | None = None
+    seller_store_url: str | None = None
+    recentlysold: str | None = None
+    domain_name: str | None = None
+    product_id: str | None = None
+    reviews_core: str | None = None
+    feedback_score_percentum: str | None = None
+    catalog_id: str | None = None
+    link_url: str | None = None
+    json_object: str | None = None
+    created_at: datetime.datetime
+
+    class Config:
+        from_attributes = True
 
 # 创建所有表
 def create_tables():

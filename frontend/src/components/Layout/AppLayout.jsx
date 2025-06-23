@@ -10,7 +10,8 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   ShopOutlined,
-  TagsOutlined
+  TagsOutlined,
+  UnorderedListOutlined
 } from '@ant-design/icons'
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../../stores/authStore'
@@ -52,7 +53,8 @@ const AppLayout = () => {
   const getSelectedKey = () => {
     const path = location.pathname
     if (path === '/') return ['dashboard']
-    if (path.startsWith('/products')) return ['products']
+    if (path.startsWith('/products') && !path.startsWith('/product-details')) return ['products']
+    if (path.startsWith('/product-details')) return ['product-details']
     if (path.startsWith('/scraper')) return ['scraper']
     if (path.startsWith('/platform-config')) return ['platform-config']
     if (path.startsWith('/category-config')) return ['category-config']
@@ -133,6 +135,11 @@ const AppLayout = () => {
               key: 'products',
               icon: <ShoppingOutlined />,
               label: <Link to="/products">商品列表</Link>,
+            },
+            {
+              key: 'product-details',
+              icon: <UnorderedListOutlined />,
+              label: <Link to="/product-details">敦煌商品详情</Link>,
             },
             {
               key: 'scraper',

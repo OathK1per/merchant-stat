@@ -10,7 +10,7 @@ from models import get_db, SysUser
 from auth import get_current_active_user
 
 # 导入路由
-from routers import auth, products, categories, platforms, notifications
+from routers import auth, products, categories, platforms, notifications, rank, product_details
 
 # 创建FastAPI应用
 app = FastAPI(
@@ -34,6 +34,8 @@ app.include_router(products.router, prefix=API_PREFIX)
 app.include_router(categories.router, prefix=API_PREFIX)
 app.include_router(platforms.router, prefix=API_PREFIX)
 app.include_router(notifications.router, prefix=API_PREFIX)
+app.include_router(rank.router, prefix=API_PREFIX)
+app.include_router(product_details.router, prefix=API_PREFIX)
 
 # 创建静态文件目录
 os.makedirs("static/images", exist_ok=True)

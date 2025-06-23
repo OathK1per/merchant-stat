@@ -132,6 +132,24 @@ export const notificationAPI = {
   deleteNotification: (id) => api.delete(`/notifications/${id}`),
 }
 
+// 产品详情相关API
+export const productDetailService = {
+  // 获取产品详情列表
+  getList: (params) => api.get('/product-details', { params }),
+  
+  // 根据商品代码获取产品详情
+  getByItemCode: (itemCode) => api.get(`/product-details/${itemCode}`),
+  
+  // 创建产品详情
+  create: (data) => api.post('/product-details', data),
+  
+  // 更新产品详情
+  update: (itemCode, data) => api.put(`/product-details/${itemCode}`, data),
+  
+  // 删除产品详情
+  delete: (itemCode) => api.delete(`/product-details/${itemCode}`),
+}
+
 // 系统相关API
 export const systemAPI = {
   // 获取系统信息

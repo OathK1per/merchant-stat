@@ -8,6 +8,7 @@ import Dashboard from './pages/Dashboard'
 import ProductList from './pages/ProductList'
 import ProductForm from './pages/ProductForm'
 import ProductScraper from './pages/ProductScraper'
+import ProductDetailList from './pages/ProductDetailList'
 import PlatformConfig from './pages/PlatformConfig'
 import CategoryConfig from './pages/CategoryConfig'
 import NotFound from './pages/NotFound'
@@ -37,6 +38,7 @@ const App = () => {
           <Route path="products" element={<ProductList />} />
           <Route path="products/create" element={<ProductForm />} />
           <Route path="products/edit/:id" element={<ProductForm />} />
+          <Route path="product-details" element={<ProductDetailList />} />
           <Route path="scraper" element={<ProductScraper />} />
           <Route path="platform-config" element={<PlatformConfig />} />
           <Route path="category-config" element={<CategoryConfig />} />
