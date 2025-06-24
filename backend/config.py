@@ -1,6 +1,7 @@
 import os
 from datetime import timedelta
 import secrets
+from urllib.parse import quote_plus
 
 # 从环境变量获取数据库配置，如果不存在则使用默认值
 DB_CONFIG = {
@@ -11,8 +12,11 @@ DB_CONFIG = {
     "database": os.environ.get("DB_NAME", "merchant_stat")
 }
 
+# 对密码进行URL编码
+encoded_password = quote_plus(DB_CONFIG['password'])
+
 # 数据库连接URL
-DATABASE_URL = f"mysql+pymysql://{DB_CONFIG['user']}:{DB_CONFIG['password']}@{DB_CONFIG['host']}:{DB_CONFIG['port']}/{DB_CONFIG['database']}"
+DATABASE_URL = f"mysql+pymysql://{DB_CONFIG['user']}:{encoded_password}@{DB_CONFIG['host']}:{DB_CONFIG['port']}/{DB_CONFIG['database']}"
 
 # JWT配置
 SECRET_KEY = secrets.token_hex(32)  # 生成随机安全密钥
