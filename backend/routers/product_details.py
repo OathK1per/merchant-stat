@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Query, Depends, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import or_, asc, desc, cast, Float, Integer
 from typing import List, Optional
@@ -7,7 +7,7 @@ from models import get_db
 
 router = APIRouter(prefix="/product-details", tags=["产品详情"])
 
-@router.get("/", response_model=dict)
+@router.get("", response_model=dict)
 def get_product_details(
     page: int = Query(1, ge=1, description="页码"),
     pageSize: int = Query(20, ge=1, le=100, description="每页数量"),
@@ -26,7 +26,7 @@ def get_product_details(
                 ProductDetail.img_text.ilike(f"%{search}%"),
                 ProductDetail.item_code.ilike(f"%{search}%")
             )
-    )
+        )
     
     # 排序功能
     if sortField and sortOrder:

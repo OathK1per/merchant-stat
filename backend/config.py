@@ -36,7 +36,16 @@ VERIFY_SSL = False  # 是否验证SSL证书
 # 应用配置
 API_PREFIX = "/api"
 # 限制CORS来源，允许本地开发环境、特定域名和所有生产环境域名
-ALLOW_ORIGINS = ["http://localhost:3000", "http://127.0.0.1:3000", "http://localhost:8000", "http://127.0.0.1:8000"]
+# 支持所有192.168网段的访问
+ALLOW_ORIGINS = [
+    "http://localhost:3000", 
+    "http://127.0.0.1:3000", 
+    "http://localhost:8000", 
+    "http://127.0.0.1:8000"
+]
+
+# 使用正则表达式匹配192.168网段
+ALLOW_ORIGIN_REGEX = r"^http://192\.168\.[0-9]{1,3}\.[0-9]{1,3}:(3000|8000)$"
 
 # 如果设置了环境变量 PRODUCTION_DOMAIN，则添加到允许的来源列表中
 import os

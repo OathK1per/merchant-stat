@@ -5,7 +5,7 @@ from fastapi.responses import JSONResponse
 import uvicorn
 import os
 
-from config import ALLOW_ORIGINS, API_PREFIX
+from config import ALLOW_ORIGINS, ALLOW_ORIGIN_REGEX, API_PREFIX
 from models import get_db, SysUser
 from auth import get_current_active_user
 
@@ -19,11 +19,11 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# 配置CORS
+# 配置CORS - 允许所有来源访问
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=ALLOW_ORIGINS,
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )

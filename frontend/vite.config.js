@@ -12,10 +12,26 @@ export default defineConfig({
       '/api': {
         target: 'http://localhost:8000',
         changeOrigin: true,
+        router: (req) => {
+          const host = req.headers.host;
+          if (host && host.startsWith('192.168.')) {
+            const ip = host.split(':')[0];
+            return `http://${ip}:8000`;
+          }
+          return 'http://localhost:8000';
+        }
       },
       '/static': {
         target: 'http://localhost:8000',
         changeOrigin: true,
+        router: (req) => {
+          const host = req.headers.host;
+          if (host && host.startsWith('192.168.')) {
+            const ip = host.split(':')[0];
+            return `http://${ip}:8000`;
+          }
+          return 'http://localhost:8000';
+        }
       }
     }
   },
