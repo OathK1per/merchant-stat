@@ -3,9 +3,21 @@ from datetime import timedelta
 import secrets
 from urllib.parse import quote_plus
 
+# 环境检测：通过环境变量 ENVIRONMENT 来判断当前环境
+# 可选值：development（开发环境）、production（生产环境）
+ENVIRONMENT = os.environ.get("ENVIRONMENT", "development")
+
+# 根据环境选择数据库主机
+if ENVIRONMENT == "production":
+    # 生产环境：使用本地数据库
+    DEFAULT_DB_HOST = "localhost"
+else:
+    # 开发环境：使用外网IP
+    DEFAULT_DB_HOST = "159.75.77.175"
+
 # 从环境变量获取数据库配置，如果不存在则使用默认值
 DB_CONFIG = {
-    "host": os.environ.get("DB_HOST", "159.75.77.175"),
+    "host": os.environ.get("DB_HOST", DEFAULT_DB_HOST),
     "port": int(os.environ.get("DB_PORT", 3306)),
     "user": os.environ.get("DB_USER", "root"),
     "password": os.environ.get("DB_PASSWORD", "zyp345@C"),

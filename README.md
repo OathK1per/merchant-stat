@@ -1,4 +1,55 @@
-# 跨境电商商品统计系统
+# Merchant Stat
+
+商家统计系统 - 一个用于跟踪和分析电商平台商家数据的全栈应用。
+
+## 🚀 快速开始
+
+### 开发环境
+
+1. **克隆项目**
+   ```bash
+   git clone <your-repository-url>
+   cd merchant-stat
+   ```
+
+2. **配置环境变量**
+   ```bash
+   # 复制环境变量模板
+   cp .env.example .env
+   
+   # 编辑 .env 文件，填入数据库配置
+   # Windows: notepad .env
+   # Linux/Mac: nano .env
+   ```
+
+3. **启动开发服务器**
+   
+   **Windows:**
+   ```cmd
+   start-dev.bat
+   ```
+   
+   **Linux/Mac:**
+   ```bash
+   chmod +x start-dev.sh
+   ./start-dev.sh
+   ```
+
+4. **访问应用**
+   - 前端: http://localhost:3000
+   - 后端API: http://localhost:8000
+   - API文档: http://localhost:8000/docs
+
+### 生产环境
+
+详细的生产环境部署指南请参考 [SETUP.md](./SETUP.md)
+
+## 📋 环境要求
+
+- Python 3.8+
+- Node.js 16+
+- MySQL 8.0+
+- npm 或 yarn
 
 这是一个用于统计和管理各个跨境电商平台热门商品信息的系统。通过爬虫技术自动抓取商品数据，或手动录入、批量导入商品信息，帮助用户分析和跟踪跨境电商市场趋势。
 
