@@ -8,7 +8,7 @@ cd ./backend && bash ./start.sh &
 sleep 5
 
 # 启动前端服务
-cd ../frontend && bash ./start.sh &
+cd ./frontend && bash ./start.sh &
 
 echo "System starting, please wait..."
 echo "Backend service: http://localhost:8000"
