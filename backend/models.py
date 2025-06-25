@@ -3,8 +3,18 @@ from sqlalchemy import Column, Integer, String, Float, DateTime, Text, ForeignKe
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy.sql import func
-from config import DATABASE_URL
+from config import DATABASE_URL, DB_CONFIG
 import datetime
+import logging
+
+# 配置日志
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# 打印数据库连接信息
+logger.info(f"准备连接数据库: {DB_CONFIG['host']}:{DB_CONFIG['port']}/{DB_CONFIG['database']}")
+logger.info(f"数据库用户: {DB_CONFIG['user']}")
+logger.info(f"完整连接URL: {DATABASE_URL}")
 
 # 创建数据库引擎，添加连接池配置
 engine = create_engine(
@@ -16,6 +26,8 @@ engine = create_engine(
     pool_pre_ping=True,  # 每次连接前检测连接是否有效
     echo=False  # 是否打印SQL语句，生产环境设为False
 )
+
+logger.info("数据库引擎创建完成")
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
